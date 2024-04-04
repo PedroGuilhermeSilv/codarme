@@ -54,7 +54,8 @@
 				"tamasfe.even-better-toml",
 				"charliermarsh.ruff",
 				"sourcery.sourcery",
-				"vivaxy.vscode-conventional-commits"
+				"vivaxy.vscode-conventional-commits",
+				"rangav.vscode-thunder-client"
 			]
 			
 		}

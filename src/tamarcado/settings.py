@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'agenda'
 ]
 
+APPEND_SLASH = False
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
