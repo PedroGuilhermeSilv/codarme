@@ -19,7 +19,7 @@ USER python
 WORKDIR /home/python/app
 
 COPY . /home/python/app
-COPY .ssh /root/.ssh
+
 
 
 
