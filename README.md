@@ -62,10 +62,10 @@ Here you can list the main routes of your API, and what are their expected reque
 | route               | description                                          
 |----------------------|-----------------------------------------------------
 | <kbd>GET /horarios</kbd>     | return all horarios [response details](#get-auth-detail)
-| <kbd>GET /agendamentos</kbd>     | return all agendamentos [response details](#get-agend)
-| <kbd>GET /agendamentos/id/</kbd>     | detalhar agendamentos [response details](#get-agend-datail)
-| <kbd>POST /agendamentos</kbd>     | detalhar agendamentos [response details](#get-auth-detail)
-| <kbd>DELETE /agendamentos/id/</kbd>     | detalhar agendamentos [response details](#get-auth-detail)
+| <kbd>GET /agendamentos</kbd>     | return all schedules [response details](#get-agend)
+| <kbd>GET /agendamentos/id/</kbd>     | detalhar schedules [response details](#get-agend-datail)
+| <kbd>POST /agendamentos</kbd>     | create schedules [response details](#post-agend)
+| <kbd>DELETE /agendamentos/id/</kbd>     | detail schedules [response details](#get-auth-detail)
 
 <h3 id="get-agend">GET /agendamentos/</h3>
 
@@ -96,6 +96,19 @@ Here you can list the main routes of your API, and what are their expected reque
 <h3 id="get-agend-datail">GET /agendamentos/id</h3>
 
 **RESPONSE**
+```json
+{
+"data_horario": "2024-04-04T16:44:48.183389Z",
+"nome_cliente": "pedro2",
+"email_cliente": "pedro@hotmail.com",
+"telefone_cliente": "989999"
+}
+
+```
+
+<h3 id="create-agend">GET /agendamentos</h3>
+
+**REQUEST** 
 ```json
 {
 "data_horario": "2024-04-04T16:44:48.183389Z",
