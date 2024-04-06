@@ -16,6 +16,10 @@
 
 
 - Django
+- Celery
+- Redis
+- Docker
+- PDM
 
 
 <h2 id="started">🚀 Getting started</h2>
@@ -24,7 +28,7 @@ Here you describe how to run your project locally
 
 <h3>Prerequisites</h3>
 
-Here you list all prerequisites necessary for running your project. For example:
+Prerequisites necessary for running your project. For example:
 
 - [Python](https://github.com/)
 - [Docker](https://github.com)
@@ -61,35 +65,35 @@ Here you can list the main routes of your API, and what are their expected reque
 ​
 | route               | description                                          
 |----------------------|-----------------------------------------------------
-| <kbd>GET /horarios</kbd>     | return all horarios [response details](#get-auth-detail)
+| <kbd>PATCH /agendamentos/id/</kbd>     | updated one schedule [response details](#updated-agend)
 | <kbd>GET /agendamentos</kbd>     | return all schedules [response details](#get-agend)
 | <kbd>GET /agendamentos/id/</kbd>     | detalhar schedules [response details](#get-agend-datail)
 | <kbd>POST /agendamentos</kbd>     | create schedules [response details](#post-agend)
-| <kbd>DELETE /agendamentos/id/</kbd>     | detail schedules [response details](#get-auth-detail)
+| <kbd>DELETE /agendamentos/id/</kbd>     | detail schedules [response details]()
 
 <h3 id="get-agend">GET /agendamentos/</h3>
 
 **RESPONSE**
 ```json
 [
-{
-"data_horario": "2024-04-04T16:40:30.190197Z",
-"nome_cliente": "pedro",
-"email_cliente": "pedro@hotmail.com",
-"telefone_cliente": "989999"
-},
-{
-"data_horario": "2024-04-04T16:41:22.023563Z",
-"nome_cliente": "pedro",
-"email_cliente": "pedro@hotmail.com",
-"telefone_cliente": "989999"
-},
-{
-"data_horario": "2024-04-04T16:44:48.183389Z",
-"nome_cliente": "pedro2",
-"email_cliente": "pedro@hotmail.com",
-"telefone_cliente": "989999"
-}
+    {
+        "data_horario": "2024-04-04T16:40:30.190197Z",
+        "nome_cliente": "pedro",
+        "email_cliente": "pedro@hotmail.com",
+        "telefone_cliente": "989999"
+    },
+    {
+        "data_horario": "2024-04-04T16:41:22.023563Z",
+        "nome_cliente": "pedro",
+        "email_cliente": "pedro@hotmail.com",
+        "telefone_cliente": "989999"
+    },
+    {
+        "data_horario": "2024-04-04T16:44:48.183389Z",
+        "nome_cliente": "pedro2",
+        "email_cliente": "pedro@hotmail.com",
+        "telefone_cliente": "989999"
+    }
 ]
 ```
 
@@ -98,10 +102,10 @@ Here you can list the main routes of your API, and what are their expected reque
 **RESPONSE**
 ```json
 {
-"data_horario": "2024-04-04T16:44:48.183389Z",
-"nome_cliente": "pedro2",
-"email_cliente": "pedro@hotmail.com",
-"telefone_cliente": "989999"
+    "data_horario": "2024-04-04T16:44:48.183389Z",
+    "nome_cliente": "pedro2",
+    "email_cliente": "pedro@hotmail.com",
+    "telefone_cliente": "989999"
 }
 
 ```
@@ -111,10 +115,28 @@ Here you can list the main routes of your API, and what are their expected reque
 **REQUEST** 
 ```json
 {
-"data_horario": "2024-04-04T16:44:48.183389Z",
-"nome_cliente": "pedro2",
-"email_cliente": "pedro@hotmail.com",
-"telefone_cliente": "989999"
+    "data_horario": "2024-04-04T16:44:48.183389Z",
+    "nome_cliente": "pedro2",
+    "email_cliente": "pedro@hotmail.com",
+    "telefone_cliente": "989999"
+}
+
+```
+
+<h3 id="updated-agend">PATCH /agendamentos/id</h3>
+
+**REQUEST** 
+```json
+{
+    "nome_cliente": "pedro2",
+}
+
+```
+
+**RESPONSE** 
+```json
+{
+    "nome_cliente": "pedro2",
 }
 
 ```
