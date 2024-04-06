@@ -110,18 +110,6 @@ Here you can list the main routes of your API, and what are their expected reque
 
 ```
 
-<h3 id="create-agend">GET /agendamentos</h3>
-
-**REQUEST** 
-```json
-{
-    "data_horario": "2024-04-04T16:44:48.183389Z",
-    "nome_cliente": "pedro2",
-    "email_cliente": "pedro@hotmail.com",
-    "telefone_cliente": "989999"
-}
-
-```
 
 <h3 id="updated-agend">PATCH /agendamentos/id</h3>
 
