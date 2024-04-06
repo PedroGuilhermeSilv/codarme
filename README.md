@@ -28,7 +28,6 @@ Here you describe how to run your project locally
 
 <h3>Prerequisites</h3>
 
-Prerequisites necessary for running your project. For example:
 
 - [Python](https://github.com/)
 - [Docker](https://github.com)
@@ -52,7 +51,6 @@ Use the `.env-example` as reference to create your configuration file `.env` wit
 
 <h3>Starting</h3>
 
-How to start your project
 
 ```bash
 cd codarme
@@ -61,7 +59,6 @@ docker compose up
 
 <h2 id="routes">📍 API Endpoints</h2>
 
-Here you can list the main routes of your API, and what are their expected request bodies.
 ​
 | route               | description                                          
 |----------------------|-----------------------------------------------------
