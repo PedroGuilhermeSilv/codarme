@@ -5,22 +5,22 @@ from .serializers import AgendamentoSerializer, AgendamentoPatchSerializer
 from rest_framework.decorators import api_view
 
 
-@api_view(["GET", "PATCH"])
+@api_view(["GET", "PATCH", "DELETE"])
 def agendamento_detail(request, id):
+    obj = get_object_or_404(Agendamento, id=id)
     if request.method == "GET":
-        agendamento = get_object_or_404(Agendamento, id=id)
-        serializer = AgendamentoSerializer(agendamento)
+        serializer = AgendamentoSerializer(obj)
         return JsonResponse(serializer.data)
+    if request.method == "DELETE":
+        obj.cancelado = True
+        obj.save()
+        return JsonResponse({"message": "Agendamento deletado com sucesso"}, status=204)
     if request.method == "PATCH":
-        obj = get_object_or_404(Agendamento, id=id)
-        serializer = AgendamentoPatchSerializer(data=request.data, partial=True)
+        serializer = AgendamentoPatchSerializer(
+            instance=obj, data=request.data, partial=True
+        )
         if serializer.is_valid():
-            v_data = serializer.validated_data
-            obj.data_horario = v_data.get("data_horario", obj.data_horario)
-            obj.nome_cliente = v_data.get("nome_cliente", obj.nome_cliente)
-            obj.email_cliente = v_data.get("email_cliente", obj.email_cliente)
-            obj.telefone_cliente = v_data.get("telefone_cliente", obj.telefone_cliente)
-            obj.save()
+            serializer.save()
             return JsonResponse(serializer.data, status=204)
         return JsonResponse(serializer.errors, status=400)
 
@@ -28,7 +28,7 @@ def agendamento_detail(request, id):
 @api_view(["GET", "POST"])
 def agendamento_list(request):
     if request.method == "GET":
-        agendamentos = Agendamento.objects.all()
+        agendamentos = Agendamento.objects.filter(cancelado=False)
         serializer = AgendamentoSerializer(agendamentos, many=True)
         return JsonResponse(serializer.data, safe=False)
     if request.method == "POST":
@@ -36,7 +36,6 @@ def agendamento_list(request):
 
         serializer = AgendamentoSerializer(data=data)
         if serializer.is_valid():
-            valide_data = serializer.validated_data
-            Agendamento.objects.create(**valide_data)
-            return JsonResponse(valide_data, status=201)
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)

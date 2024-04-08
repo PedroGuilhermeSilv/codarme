@@ -22,8 +22,8 @@
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
-    "window.zoomLevel": 0.5,
-
+    "window.zoomLevel": 0.2,
+    "cSpell.enabled": false,
 
 
     //unittes
