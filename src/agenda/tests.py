@@ -14,18 +14,21 @@ def agendamento() -> Agendamento:
     )
 
 
+@pytest.fixture
+def api_client() -> APIClient:
+    return APIClient()
+
+
 @pytest.mark.django_db
 class TestsListAgendamentos:
-    def test_list_agendamentos(self):
-        client = APIClient()
-        response = client.get("/api/agendamentos/")
+    def test_list_agendamentos(self, api_client):
+        response = api_client.get("/api/agendamentos/")
         assert response.status_code == 200
         data = response.json()
         assert data == []
 
-    def test_listagem_de_agendamentos_criados(self, agendamento):
-        client = APIClient()
-        response = client.get("/api/agendamentos/")
+    def test_listagem_de_agendamentos_criados(self, agendamento, api_client):
+        response = api_client.get("/api/agendamentos/")
         assert response.status_code == 200
         data = response.json()
         assert len(data) == 1
@@ -34,15 +37,14 @@ class TestsListAgendamentos:
 
 @pytest.mark.django_db
 class TestCreateAgendamento:
-    def test_create_agendamento(self):
-        client = APIClient()
+    def test_create_agendamento(self, api_client):
         data = {
             "data_horario": "2027-10-10T10:00:00Z",
             "nome_cliente": "Fulano",
             "email_cliente": "test@hotmail.com",
             "telefone_cliente": "11999999999",
         }
-        response = client.post("/api/agendamentos/", data=data, format="json")
+        response = api_client.post("/api/agendamentos/", data=data, format="json")
         assert response.status_code == 201
         assert Agendamento.objects.count() == 1
         agendamento = Agendamento.objects.first()
@@ -52,15 +54,14 @@ class TestCreateAgendamento:
             2027, 10, 10, 10, 0, tzinfo=datetime.timezone.utc
         )
 
-    def test_create_agendamento__com_data_invalida(self):
-        client = APIClient()
+    def test_create_agendamento__com_data_invalida(self, api_client):
         data = {
             "data_horario": "2021-10-10T10:00:00Z",
             "nome_cliente": "Fulano",
             "email_cliente": "test@hotmail.com",
             "telefone_cliente": "11999999999",
         }
-        response = client.post("/api/agendamentos/", data=data, format="json")
+        response = api_client.post("/api/agendamentos/", data=data, format="json")
         assert response.status_code == 400
         assert Agendamento.objects.count() == 0
 
@@ -82,9 +83,8 @@ class TestAgendamentoDetail:
         response = client.get("/api/agendamentos/1")
         assert response.status_code == 404
 
-    def test_agendamento_detail__delete(self, agendamento):
-        client = APIClient()
-        response = client.delete(f"/api/agendamentos/{agendamento.id}")
+    def test_agendamento_detail__delete(self, agendamento, api_client):
+        response = api_client.delete(f"/api/agendamentos/{agendamento.id}")
         assert response.status_code == 204
         agendamento.refresh_from_db()
         assert agendamento.cancelado is True
@@ -93,6 +93,6 @@ class TestAgendamentoDetail:
         client = APIClient()
         data = {"nome_cliente": "Ciclano"}
         response = client.patch(f"/api/agendamentos/{agendamento.id}", data=data)
-        assert response.status_code == 204
+        assert response.status_code == 200
         agendamento.refresh_from_db()
         assert agendamento.nome_cliente == "Ciclano"

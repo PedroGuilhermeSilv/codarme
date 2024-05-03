@@ -1,79 +1,66 @@
 from agenda.models import Agendamento
+from .serializers import AgendamentoSerializer, PrestadorSerializer
+from rest_framework import permissions
+from django.contrib.auth.models import User
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    ListAPIView,
+)
+from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import api_view
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .serializers import AgendamentoSerializer, AgendamentoPatchSerializer
-from rest_framework.views import APIView
+from datetime import datetime
+from .utils import get_horarios_disponiveis
+
+"""
+- Qualquer cliente (autenticado ou não) seja capaz de criar um agendamento
+- Apenas o prestador de serviço pode vizualizar todos os agendamentos de sua agenda
+- Apenas o prestador de serviço pode manipular os seus agendamentos 
+"""
 
 
-class AgendamentoDetail(APIView):
-    def get(self, request, id):
-        obj = get_object_or_404(Agendamento, id=id)
-        serializer = AgendamentoSerializer(obj)
-        return JsonResponse(serializer.data)
-
-    def delete(self, request, id):
-        obj = get_object_or_404(Agendamento, id=id)
-        obj.cancelado = True
-        obj.save()
-        return JsonResponse({"message": "Agendamento deletado com sucesso"}, status=204)
-
-    def patch(self, request, id):
-        obj = get_object_or_404(Agendamento, id=id)
-        serializer = AgendamentoPatchSerializer(
-            instance=obj, data=request.data, partial=True
-        )
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=204)
-        return JsonResponse(serializer.errors, status=400)
+class IsOwnerOrCreateOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == "POST":
+            return True
+        username = request.query_params.get("username", None)
+        return request.user.username == username
 
 
-# @api_view(["GET", "PATCH", "DELETE"])
-# def agendamento_detail(request, id):
-#     obj = get_object_or_404(Agendamento, id=id)
-#     if request.method == "GET":
-#         serializer = AgendamentoSerializer(obj)
-#         return JsonResponse(serializer.data)
-#     if request.method == "DELETE":
-#         obj.cancelado = True
-#         obj.save()
-#         return JsonResponse({"message": "Agendamento deletado com sucesso"}, status=204)
-#     if request.method == "PATCH":
-#         serializer = AgendamentoPatchSerializer(
-#             instance=obj, data=request.data, partial=True
-#         )
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=204)
-#         return JsonResponse(serializer.errors, status=400)
+class IsPrestador(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.prestador
 
 
-class AgendamentoList(APIView):
-    def get(self, request):
-        agendamentos = Agendamento.objects.filter(cancelado=False)
-        serializer = AgendamentoSerializer(agendamentos, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-    def post(self, request):
-        data = request.data
-        serializer = AgendamentoSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+class AgendamentoDetail(RetrieveUpdateDestroyAPIView):  # api/agendamentos/<int:pk>
+    queryset = Agendamento.objects.all()
+    serializer_class = AgendamentoSerializer
+    permission_classes = [IsPrestador]
 
 
-# @api_view(["GET", "POST"])
-# def agendamento_list(request):
-#     if request.method == "GET":
-#         agendamentos = Agendamento.objects.filter(cancelado=False)
-#         serializer = AgendamentoSerializer(agendamentos, many=True)
-#         return JsonResponse(serializer.data, safe=False)
-#     if request.method == "POST":
-#         data = request.data
+class AgendamentoList(ListCreateAPIView):  # api/agendamentos/?username=<username>
+    serializer_class = AgendamentoSerializer
+    permission_classes = [IsOwnerOrCreateOnly]
 
-#         serializer = AgendamentoSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=201)
-#         return JsonResponse(serializer.errors, status=400)
+    def get_queryset(self):
+        username = self.request.query_params.get("username", None)
+        return Agendamento.objects.filter(prestador__username=username)
+
+
+class PrestadorList(ListAPIView):
+    serializer_class = PrestadorSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+
+
+@api_view(http_method_names=["GET"])
+def get_horarios(request):
+    data = request.query_params.get("data")
+    if not data:
+        data = datetime.now().date()
+    else:
+        data = datetime.fromisoformat(data).date()
+
+    horarios_disponiveis = sorted(list(get_horarios_disponiveis(data)))
+    return JsonResponse(horarios_disponiveis, safe=False)

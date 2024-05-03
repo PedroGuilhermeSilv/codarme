@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Agendamento
 from django.utils import timezone
+from django.contrib.auth.models import User
+from .utils import get_horarios_disponiveis
 
 
 class AgendamentoSerializer(serializers.ModelSerializer):
@@ -13,20 +15,26 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             "email_cliente",
             "telefone_cliente",
             "cancelado",
+            "prestador",
         ]
-    # data_horario = serializers.DateTimeField()
-    # nome_cliente = serializers.CharField(max_length=255)
-    # email_cliente = serializers.EmailField()
-    # telefone_cliente = serializers.CharField(max_length=20)
 
-    # def create(self, validated_data):
-    #     return Agendamento.objects.create(**validated_data)
+    prestador = serializers.CharField()
+
+    def validate_prestador(self, value):
+        try:
+            prestador = User.objects.get(username=value)
+        except User.DoesNotExist as e:
+            raise serializers.ValidationError("Prestador não encontrado.") from e
+        return prestador
 
     def validate_data_horario(self, value):
         if value < timezone.now():
             raise serializers.ValidationError(
                 "Não é possível agendar para um horário no passado."
             )
+        horarios_disponiveis = get_horarios_disponiveis(value.date())
+        if value not in horarios_disponiveis:
+            raise serializers.ValidationError("Horário indisponível.")
         return value
 
 
@@ -41,17 +49,14 @@ class AgendamentoPatchSerializer(serializers.ModelSerializer):
             "telefone_cliente",
             "cancelado",
         ]
-    # data_horario = serializers.DateTimeField(required=False)
-    # nome_cliente = serializers.CharField(max_length=255, required=False)
-    # email_cliente = serializers.EmailField(required=False)
-    # telefone_cliente = serializers.CharField(max_length=20, required=False)
-    # cancelado = serializers.BooleanField(required=False)
 
     def validate_data_horario(self, value):
         if value < timezone.now():
             raise serializers.ValidationError(
                 "Não é possível agendar para um horário no passado."
             )
+        if value in get_horarios_disponiveis(value.date()):
+            raise serializers.ValidationError("Horário indisponível.")
         return value
 
     def validate(self, attrs):
@@ -68,18 +73,10 @@ class AgendamentoPatchSerializer(serializers.ModelSerializer):
         else:
             return attrs
 
-    # def update(self, instance, validated_data):
-    #     instance.data_horario = validated_data.get(
-    #         "data_horario", instance.data_horario
-    #     )
-    #     instance.nome_cliente = validated_data.get(
-    #         "nome_cliente", instance.nome_cliente
-    #     )
-    #     instance.email_cliente = validated_data.get(
-    #         "email_cliente", instance.email_cliente
-    #     )
-    #     instance.telefone_cliente = validated_data.get(
-    #         "telefone_cliente", instance.telefone_cliente
-    #     )
-    #     instance.save()
-    #     return instance
+
+class PrestadorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "agendamentos"]
+
+    agendamentos = AgendamentoSerializer(many=True, read_only=True)
