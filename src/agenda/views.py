@@ -13,12 +13,6 @@ from django.http import JsonResponse
 from datetime import datetime
 from .utils import get_horarios_disponiveis
 
-"""
-- Qualquer cliente (autenticado ou não) seja capaz de criar um agendamento
-- Apenas o prestador de serviço pode vizualizar todos os agendamentos de sua agenda
-- Apenas o prestador de serviço pode manipular os seus agendamentos 
-"""
-
 
 class IsOwnerOrCreateOnly(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -37,6 +31,10 @@ class AgendamentoDetail(RetrieveUpdateDestroyAPIView):  # api/agendamentos/<int:
     queryset = Agendamento.objects.all()
     serializer_class = AgendamentoSerializer
     permission_classes = [IsPrestador]
+
+    def perform_destroy(self, instance):
+        instance.cancelado = True
+        instance.save()
 
 
 class AgendamentoList(ListCreateAPIView):  # api/agendamentos/?username=<username>
@@ -57,10 +55,7 @@ class PrestadorList(ListAPIView):
 @api_view(http_method_names=["GET"])
 def get_horarios(request):
     data = request.query_params.get("data")
-    if not data:
-        data = datetime.now().date()
-    else:
-        data = datetime.fromisoformat(data).date()
+    data = datetime.fromisoformat(data).date() if data else datetime.now().date()
 
     horarios_disponiveis = sorted(list(get_horarios_disponiveis(data)))
     return JsonResponse(horarios_disponiveis, safe=False)

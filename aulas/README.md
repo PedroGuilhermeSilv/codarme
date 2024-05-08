@@ -19,11 +19,11 @@
 [x] - #A658
 [x] - #A659
 [x] - #A660
-[ ] - #A661
-[ ] - #A662
-[ ] - #A663
-[ ] - #A664
-[ ] - #A665
+[x] - #A661
+[x] - #A662
+[x] - #A663
+[x] - #A664
+[x] - #A665
 [ ] - #A666
 [ ] - #A667
 [ ] - #A668
@@ -175,7 +175,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
 
 ```
 
-## Permissções:
+## Permissões:
 - No django podemos fazer validações especificas usando a Basic Auth passando o username e senha, podemos permitir tanto á nivel de url quanto de obj:
 
 ```python
@@ -196,3 +196,12 @@ class IsPrestador(permissions.BasePermission):
 - Vemos que na classe `IsOwnerOrCreateOnly` eu varifico apenas se o metodo chamado é um post e se o username é igual ao user que está tentando criar o obj.
 
 - Na segunda estamos mais focado se o obj que é do user que faz a request.
+
+
+### Regras de negócios:
+
+"""
+- Qualquer cliente (autenticado ou não) seja capaz de criar um agendamento
+- Apenas o prestador de serviço pode vizualizar todos os agendamentos de sua agenda
+- Apenas o prestador de serviço pode manipular os seus agendamentos 
+"""

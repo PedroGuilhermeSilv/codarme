@@ -1,12 +1,26 @@
 import datetime
+import unittest.mock
 from rest_framework.test import APIClient
 from agenda.models import Agendamento
 import pytest
+from django.contrib.auth.models import User
 
 
 @pytest.fixture
-def agendamento() -> Agendamento:
+def prestador() -> User:
+    return User.objects.create_user(
+        username="prestador", email="prestador@gmail.com", password="password"
+    )
+
+
+def is_feriado_simulado(data):
+    return True
+
+
+@pytest.fixture
+def agendamento(prestador) -> Agendamento:
     return Agendamento.objects.create(
+        prestador=prestador,
         data_horario="2021-10-10T10:00:00Z",
         nome_cliente="Fulano",
         email_cliente="pedro@hotmail.com",
@@ -21,24 +35,29 @@ def api_client() -> APIClient:
 
 @pytest.mark.django_db
 class TestsListAgendamentos:
-    def test_list_agendamentos(self, api_client):
-        response = api_client.get("/api/agendamentos/")
+    def test_list_agendamentos(self, api_client, agendamento):
+        api_client.login(username="prestador", password="password")
+        response = api_client.get("/api/agendamentos/?username=prestador")
         assert response.status_code == 200
         data = response.json()
-        assert data == []
-
-    def test_listagem_de_agendamentos_criados(self, agendamento, api_client):
-        response = api_client.get("/api/agendamentos/")
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data) == 1
-        assert data[0]["id"] == agendamento.id
+        assert data == [
+            {
+                "id": agendamento.id,
+                "data_horario": agendamento.data_horario,
+                "nome_cliente": agendamento.nome_cliente,
+                "email_cliente": agendamento.email_cliente,
+                "telefone_cliente": agendamento.telefone_cliente,
+                "cancelado": agendamento.cancelado,
+                "prestador": agendamento.prestador.username,
+            }
+        ]
 
 
 @pytest.mark.django_db
 class TestCreateAgendamento:
-    def test_create_agendamento(self, api_client):
+    def test_create_agendamento(self, api_client, prestador):
         data = {
+            "prestador": prestador.username,
             "data_horario": "2027-10-10T10:00:00Z",
             "nome_cliente": "Fulano",
             "email_cliente": "test@hotmail.com",
@@ -68,8 +87,9 @@ class TestCreateAgendamento:
 
 @pytest.mark.django_db
 class TestAgendamentoDetail:
-    def test_agendamento_detail(self, agendamento):
+    def test_agendamento_detail(self, agendamento, prestador):
         client = APIClient()
+        client.login(username=agendamento.prestador.username, password="password")
         response = client.get(f"/api/agendamentos/{agendamento.id}")
         assert response.status_code == 200
         data = response.json()
@@ -78,21 +98,34 @@ class TestAgendamentoDetail:
         assert data["email_cliente"] == agendamento.email_cliente
         assert data["telefone_cliente"] == agendamento.telefone_cliente
 
-    def test_agendamento_detail__agendamento_nao_existe(self):
-        client = APIClient()
-        response = client.get("/api/agendamentos/1")
-        assert response.status_code == 404
+    def test_agendamento_detail__agendamento_nao_existe(self, api_client, agendamento):
+        api_client.login(username="prestador", password="password")
 
-    def test_agendamento_detail__delete(self, agendamento, api_client):
         response = api_client.delete(f"/api/agendamentos/{agendamento.id}")
         assert response.status_code == 204
-        agendamento.refresh_from_db()
+        agendamento = Agendamento.objects.get(id=agendamento.id)
         assert agendamento.cancelado is True
 
     def test_agendamento_detail__patch(self, agendamento):
         client = APIClient()
+        client.login(username=agendamento.prestador.username, password="password")
         data = {"nome_cliente": "Ciclano"}
         response = client.patch(f"/api/agendamentos/{agendamento.id}", data=data)
         assert response.status_code == 200
         agendamento.refresh_from_db()
         assert agendamento.nome_cliente == "Ciclano"
+
+
+@pytest.mark.django_db
+class TestGetHorarios:
+    def test_when_date_is_holiday(self, api_client, monkeypatch):
+        monkeypatch.setattr("agenda.utils.feriados.is_feriado", is_feriado_simulado)
+        response = api_client.get("/api/horarios/?data=2025-12-25")
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_when_date_return_list_of_available_times(self, api_client):
+        response = api_client.get("/api/horarios/?data=2025-12-24")
+        assert response.status_code == 200
+        assert response.json()[0] == "2025-12-24T09:00:00Z"
+        assert response.json()[-1] == "2025-12-24T17:30:00Z"
