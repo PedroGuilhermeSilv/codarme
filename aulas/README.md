@@ -24,9 +24,9 @@
 [x] - #A663
 [x] - #A664
 [x] - #A665
-[ ] - #A666
-[ ] - #A667
-[ ] - #A668
+[x] - #A666
+[x] - #A667
+[x] - #A668
 [ ] - #A669
 [ ] - #A670
 [ ] - #A671
@@ -205,3 +205,18 @@ class IsPrestador(permissions.BasePermission):
 - Apenas o prestador de serviço pode vizualizar todos os agendamentos de sua agenda
 - Apenas o prestador de serviço pode manipular os seus agendamentos 
 """
+
+### Pytest-cov
+
+- Esta lib vai fazer a verificação no seu projeto para verificar a cobertura de test do seu código, podendo ser utilizado em CI para subir projetos. Ex:
+```
+
+---------- coverage: platform linux, python 3.11.1-final-0 -----------
+Name                                       Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------
+manage.py                                     12     12     0%   2-22
+src/agenda/serializers.py                     44     13    70%   26-27, 37, 54-60, 63-74
+src/externals/api/brasil_api/feriados.py      17     11    35%   13-23
+------------------------------------------------------------------------
+TOTAL                                        266     36    86%
+```
