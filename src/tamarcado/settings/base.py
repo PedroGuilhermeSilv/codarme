@@ -79,7 +79,6 @@ WSGI_APPLICATION = "tamarcado.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -121,3 +120,25 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 TESTING = os.getenv("TESTING", False)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "[%(asctime)s] %(levelname)s %(message)s",
+        },
+        "verbose": {
+            "format": "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "WARN",
+            "class": "logging.StreamHandler",
+        }
+    },
+    "loggers": {
+        "": {"handlers": ["console"], "level": "WARN", "propagate": True},
+    },
+}

@@ -27,8 +27,8 @@
 [x] - #A666
 [x] - #A667
 [x] - #A668
-[ ] - #A669
-[ ] - #A670
+[x] - #A669
+[X] - #A670
 [ ] - #A671
 [ ] - #A672
 [ ] - #A673
@@ -220,3 +220,11 @@ src/externals/api/brasil_api/feriados.py      17     11    35%   13-23
 ------------------------------------------------------------------------
 TOTAL                                        266     36    86%
 ```
+
+### lOGGING
+Podemos utilizar do logging para fazer monitoramento da executação de nosso código e para sinalizar como esta sua funcionalidade. Por exemplo: neste projeto fazemos uma requisição a uma API externa e caso essa API esteja fora do ar eu não quero que meu sistema caia então eu adicionei um log de error para sinalizar essa situação.
+
+Abaixo temos uma tabela explicando os tipos de log:
+
+![Table for logging](../aulas/img/image.png)
+
