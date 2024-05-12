@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
       {
-        "src": "src/tamarcado/wsgi.py",
+        "src": "codarme/wsgi.py",
         "use": "@vercel/python"
       }
     ],
@@ -13,7 +13,7 @@
       },
       {
         "src": "/(.*)",
-        "dest": "src/tamarcado/wsgi.py"
+        "dest": "codarme/wsgi.py"
       }
     ]
   }
