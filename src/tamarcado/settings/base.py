@@ -72,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "tamarcado.wsgi.application"
+WSGI_APPLICATION = "src.tamarcado.wsgi.application"
 
 
 # Database
