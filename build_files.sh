@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+echo "Instalando dependências..."
+pip install -r requirements.txt
 
 echo "Migrando banco de dados..."
 python3 manage.py makemigrations --noinput
