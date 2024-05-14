@@ -3,25 +3,17 @@ from src.tamarcado.settings.base import *  # noqa
 import os
 
 
-DATABASES = (
-    {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",  # noqa
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "my_db"),
+        "USER": os.getenv("POSTGRES_USER", "my_user"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "my_password"),
+        "HOST": os.getenv("HOST", "db"),
+        "PORT": os.getenv("PORT", "5432"),
     }
-    if TESTING
-    else {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRES_DB", "my_db"),
-            "USER": os.getenv("POSTGRES_USER", "my_user"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "my_password"),
-            "HOST": os.getenv("HOST", "db"),
-            "PORT": os.getenv("PORT", "5432"),
-        }
-    }
-)
+}
+
 
 ALLOWED_HOSTS = ["*"]
 
