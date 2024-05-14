@@ -1,10 +1,3 @@
-#!/usr/bin/env bash
-echo "Instalando dependências..."
+# build_files.sh
 pip install -r requirements.txt
-
-echo "Migrando banco de dados..."
-python3 manage.py makemigrations --noinput
-python3 manage.py migrate --noinput
-
-echo "Coletando arquivos estáticos..."
-python3 manage.py collectstatic --noinput
+python3.9 manage.py collectstatic
