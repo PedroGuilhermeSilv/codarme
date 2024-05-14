@@ -4,13 +4,6 @@
       {
         "src": "src/tamarcado/wsgi.py",
         "use": "@vercel/python"
-      },
-      {
-        "src": "build_files.sh",
-        "use": "@vercel/python",
-        "config": {
-          "distDir": "staticfiles_build"
-        }
       }
     ],
     "routes": [
