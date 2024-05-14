@@ -54,7 +54,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "tamarcado.urls"
+ROOT_URLCONF = "src.tamarcado.urls"
 
 TEMPLATES = [
     {
