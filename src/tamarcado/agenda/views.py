@@ -1,4 +1,6 @@
 import csv
+
+from src.tamarcado.agenda.tasks import gerar_relatorio_prestadores
 from .models import Agendamento
 from .serializers import AgendamentoSerializer, PrestadorSerializer
 from rest_framework import permissions
@@ -66,24 +68,25 @@ def get_prestadores(request):
 
     if formato != "csv":
         return Response(serializer.data)
-    response = HttpResponse(
-        content_type="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="relatorio{date.today()}.csv"'},
-    )
-    writer = csv.writer(response)
-    for prestador in serializer.data:
-        agendamentos = prestador["agendamentos"]
-        for agendamento in agendamentos:
-            writer.writerow(
-                [
-                    agendamento["prestador"],
-                    agendamento["nome_cliente"],
-                    agendamento["email_cliente"],
-                    agendamento["telefone_cliente"],
-                    agendamento["cancelado"],
-                ]
-            )
-    return response
+    # response = HttpResponse(
+    #     content_type="text/csv",
+    #     headers={"Content-Disposition": f'attachment; filename="relatorio{date.today()}.csv"'},
+    # )
+    # writer = csv.writer(response)
+    # for prestador in serializer.data:
+    #     agendamentos = prestador["agendamentos"]
+    #     for agendamento in agendamentos:
+    #         writer.writerow(
+    #             [
+    #                 agendamento["prestador"],
+    #                 agendamento["nome_cliente"],
+    #                 agendamento["email_cliente"],
+    #                 agendamento["telefone_cliente"],
+    #                 agendamento["cancelado"],
+    #             ]
+    #         )
+    result = gerar_relatorio_prestadores.delay()
+    return Response({"task_id": result.task_id})
 
 
 @api_view(http_method_names=["GET"])

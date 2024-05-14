@@ -4,6 +4,8 @@ services:
   app:
     build: .
     container_name: codarme
+    ports:
+      - "8000:8000"
     volumes:
       - .:/home/python/app
   redis:

@@ -8,6 +8,7 @@ RUN apt update && apt-get upgrade -y && apt install -y --no-install-recommends \
     curl \
     wget \
     fonts-powerline \
+    make \
     && apt-get clean 
 
 RUN useradd -ms /bin/bash python
