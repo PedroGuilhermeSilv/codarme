@@ -1,5 +1,5 @@
 runserver:
-	@pdm run python manage.py runserver
+	@pdm run python manage.py runserver 0.0.0.0:8000
 
 migrations:
 	@pdm run python manage.py makemigrations

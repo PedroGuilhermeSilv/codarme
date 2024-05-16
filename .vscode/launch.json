@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "python-celery",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "celery",
+            "console": "integratedTerminal",
+            "args": ["-A", "src.tamarcado.celery", "worker", "--loglevel=info"],
+            "cwd": "${workspaceFolder}",
+        }
+    ]
+}

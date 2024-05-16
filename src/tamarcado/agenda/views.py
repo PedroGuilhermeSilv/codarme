@@ -1,5 +1,3 @@
-import csv
-
 from src.tamarcado.agenda.tasks import gerar_relatorio_prestadores
 from .models import Agendamento
 from .serializers import AgendamentoSerializer, PrestadorSerializer
@@ -8,7 +6,6 @@ from django.contrib.auth.models import User
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
-    ListAPIView,
 )
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import (
@@ -16,8 +13,8 @@ from rest_framework.decorators import (
     permission_classes as permission_classes_decorator,
 )
 from rest_framework.response import Response
-from django.http import HttpResponse, JsonResponse
-from datetime import date, datetime
+from django.http import JsonResponse
+from datetime import datetime
 from .utils import get_horarios_disponiveis
 
 

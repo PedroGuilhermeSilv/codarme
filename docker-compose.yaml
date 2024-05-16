@@ -4,10 +4,14 @@ services:
   app:
     build: .
     container_name: codarme
+    expose:
+      - "8000"
     ports:
       - "8000:8000"
     volumes:
       - .:/home/python/app
+    networks:
+      - mynetwork
   redis:
     image: redis
     container_name: redis
@@ -19,3 +23,19 @@ services:
     volumes:
       - ./data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - mynetwork
+  mailhog:
+    image: mailhog/mailhog
+    container_name: 'mailhog'
+    expose:
+      - "1025"
+      - "8025"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
