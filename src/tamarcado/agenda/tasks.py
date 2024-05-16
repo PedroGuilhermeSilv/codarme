@@ -4,7 +4,7 @@ import io
 from django.contrib.auth.models import User
 from src.tamarcado.agenda.serializers import PrestadorSerializer
 from src.tamarcado.celery import app
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 
 @app.task()
 def gerar_relatorio_prestadores():
@@ -25,9 +25,11 @@ def gerar_relatorio_prestadores():
                     agendamento["cancelado"],
                 ]
             )
-    send_mail(
+    email = EmailMessage(
         "Relatório de prestadores",
         "Relatório em anexo",
-        "test@hotmail.com",
-        ["t@hotmail.com"],)
-    print(output.getvalue())
+        "test@homtmail.com",
+        ["t@hotmail.com"],
+    )
+    email.attach("relatorio.csv", output.getvalue(), "text/csv")
+    email.send()

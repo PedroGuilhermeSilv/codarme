@@ -150,4 +150,4 @@ LOGGING = {
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_PORT = 1025
-EMAIL_HOST = "0.0.0.0"
+EMAIL_HOST = "mailhog"
